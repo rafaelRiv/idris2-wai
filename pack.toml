@@ -1,0 +1,10 @@
+[custom.all.idris2-wai]
+type = "local"
+path = "."
+ipkg = "idris2-way.ipkg"
+
+[custom.nightly-250221.idris2-http-types]
+type   = "github"
+url    = "https://github.com/rafaelRiv/idris2-http-types"
+commit = "fbd00cf10e1e5db1f573bda740b57ed436fb7051"
+ipkg   = "idris2-http-types.ipkg"
