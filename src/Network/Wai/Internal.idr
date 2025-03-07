@@ -3,14 +3,17 @@ module Network.Wai.Internal
 import Network.HTTP.Types
 import Network.Socket
 
+public export
 data RequestBodyLength = ChunkedBody | KnownLength Bits64
 
+public export
 Show RequestBodyLength where
   show ChunkedBody = "ChunkedBody"
   show (KnownLength x) = "KnownLength " ++ show x 
 
 ||| Information on the request sent by the client. This abstracts away the
 ||| details of the underlying implementation.
+public export
 record Request where
   ||| Request method such as GET.
   requestMethod : Method
@@ -82,6 +85,7 @@ record Request where
   ||| Since 3.2.0
   requestHeaderUserAgent : Maybe String
 
+public export
 Show Request where
     show request = "Request { " ++ show fields ++ " }"
         where
@@ -102,18 +106,22 @@ Show Request where
                 ,("requestHeaderRange",show $ requestHeaderRange request)
                 ]
 
+public export
 record FilePart where 
     filePartOffset    : Integer
     filePartByteCount : Integer
     filePartFileSize  : Integer
 
+public export
 StreamingBody : Type
 StreamingBody = (String -> IO ()) -> IO () -> IO ()
 
+public export
 data Response
     = ResponseFile Status ResponseHeaders String (Maybe FilePart)
      | ResponseBuilder Status ResponseHeaders String
      | ResponseStream Status ResponseHeaders StreamingBody
      | ResponseRaw (IO String -> (String -> IO ()) -> IO ()) Response
 
+public export
 ResponseReceived : Type 
