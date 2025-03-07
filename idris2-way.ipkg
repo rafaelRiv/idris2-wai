@@ -1,5 +1,5 @@
 package idris2-way
 version = 0.1.0
 modules = Network.Wai.Internal
-depends = idris2-http-types
+depends = idris2-http-types,network
 sourcedir = "src"
