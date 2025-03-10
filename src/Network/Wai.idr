@@ -22,13 +22,7 @@
 -- preload all templates from disk when first starting; this would kill the
 -- performance of a CGI application.
 --
--- This package purposely provides very little functionality. You can find various
--- middlewares, backends and utilities on Hackage. Some of the most commonly used
--- include:
---
--- [warp] <http://hackage.haskell.org/package/warp>
---
--- [wai-extra] <http://hackage.haskell.org/package/wai-extra>
+-- This package purposely provides very little functionality. 
 module Network.Wai 
 
 import Network.HTTP.Types
@@ -70,13 +64,6 @@ responseFile = ResponseFile
 responseBuilder : Status -> ResponseHeaders -> String -> Response
 responseBuilder = ResponseBuilder
 
--- | Creating 'Response' from 'L.ByteString'. This is a wrapper for
---   'responseBuilder'.
---
--- @since 0.3.0
-{-responseLBS :: H.Status -> H.ResponseHeaders -> L.ByteString -> Response
-responseLBS s h = ResponseBuilder s h . lazyByteString -}
-
 -- | Creating 'Response' from a stream of values.
 --
 -- In order to allocate resources in an exception-safe manner, you can use the
@@ -99,12 +86,12 @@ responseLBS s h = ResponseBuilder s h . lazyByteString -}
 -- and response headers to depend on the scarce resource.
 --
 -- @since 3.0.0
-{- responseStream
-    :: H.Status
-    -> H.ResponseHeaders
+responseStream
+    : Status
+    -> ResponseHeaders
     -> StreamingBody
     -> Response
-    responseStream = ResponseStream -}
+responseStream = ResponseStream
 
 -- | Create a response for a raw application. This is useful for \"upgrade\"
 -- situations such as WebSockets, where an application requests for the server
@@ -115,33 +102,27 @@ responseLBS s h = ResponseBuilder s h . lazyByteString -}
 --
 -- In the event that you read from the request body before returning a
 -- @responseRaw@, behavior is undefined.
---
--- @since 2.1.0
-{- responseRaw
-    :: (IO B.ByteString -> (B.ByteString -> IO ()) -> IO ())
+responseRaw
+    : (IO String -> (String -> IO ()) -> IO ())
     -> Response
     -> Response
-    responseRaw = ResponseRaw -}
+responseRaw = ResponseRaw
 
 ----------------------------------------------------------------
 
--- | Accessing 'H.Status' in 'Response'.
---
--- @since 1.2.0
-{-responseStatus :: Response -> H.Status
+-- | Accessing 'Status' in 'Response'.
+responseStatus : Response -> Status
 responseStatus (ResponseFile s _ _ _) = s
 responseStatus (ResponseBuilder s _ _) = s
 responseStatus (ResponseStream s _ _) = s
-responseStatus (ResponseRaw _ res) = responseStatus res -}
+responseStatus (ResponseRaw _ res) = responseStatus res
 
 -- | Accessing 'H.ResponseHeaders' in 'Response'.
---
--- @since 2.0.0
-{- responseHeaders :: Response -> H.ResponseHeaders
+responseHeaders : Response -> ResponseHeaders
 responseHeaders (ResponseFile _ hs _ _) = hs
 responseHeaders (ResponseBuilder _ hs _) = hs
 responseHeaders (ResponseStream _ hs _) = hs
-responseHeaders (ResponseRaw _ res) = responseHeaders res -}
+responseHeaders (ResponseRaw _ res) = responseHeaders res
 
 -- | Converting the body information in 'Response' to a 'StreamingBody'.
 --
@@ -182,29 +163,25 @@ responseToStream (ResponseBuilder s h b) =
     responseToStream (ResponseRaw _ res) = responseToStream res -}
 
 -- | Apply the provided function to the response header list of the Response.
---
--- @since 3.0.3.0
-{-mapResponseHeaders
-    :: (H.ResponseHeaders -> H.ResponseHeaders) -> Response -> Response
+mapResponseHeaders
+    : (ResponseHeaders -> ResponseHeaders) -> Response -> Response
 mapResponseHeaders f (ResponseFile s h b1 b2) = ResponseFile s (f h) b1 b2
 mapResponseHeaders f (ResponseBuilder s h b) = ResponseBuilder s (f h) b
 mapResponseHeaders f (ResponseStream s h b) = ResponseStream s (f h) b
-mapResponseHeaders _ r@(ResponseRaw _ _) = r -}
+mapResponseHeaders _ r@(ResponseRaw _ _) = r
 
 -- | Apply the provided function to the response status of the Response.
---
--- @since 3.2.1
-{-mapResponseStatus :: (H.Status -> H.Status) -> Response -> Response
+mapResponseStatus : (Status -> Status) -> Response -> Response
 mapResponseStatus f (ResponseFile s h b1 b2) = ResponseFile (f s) h b1 b2
 mapResponseStatus f (ResponseBuilder s h b) = ResponseBuilder (f s) h b
 mapResponseStatus f (ResponseStream s h b) = ResponseStream (f s) h b
-mapResponseStatus _ r@(ResponseRaw _ _) = r -}
+mapResponseStatus _ r@(ResponseRaw _ _) = r
 
 ----------------------------------------------------------------
 
 -- | The WAI application.
 --
--- Note that, since WAI 3.0, this type is structured in continuation passing
+-- Note that this type is structured in continuation passing
 -- style to allow for proper safe resource handling. This was handled in the
 -- past via other means (e.g., @ResourceT@). As a demonstration:
 --
@@ -215,26 +192,24 @@ mapResponseStatus _ r@(ResponseRaw _ _) = r -}
 --     (putStrLn \"Cleaning up\")
 --     (respond $ responseLBS status200 [] \"Hello World\")
 -- @
-{-type Application =
-Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived -}
+Application : Type
+Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 
 -- | A default, blank request.
---
--- @since 2.0.0
-{-defaultRequest :: Request
-defaultRequest =
+defaultRequest : Request
+{-defaultRequest =
     Request
-        { requestMethod = H.methodGet
-        , httpVersion = H.http10
-        , rawPathInfo = B.empty
-        , rawQueryString = B.empty
+        { requestMethod = methodGet
+        , httpVersion = http10
+        , rawPathInfo = ""
+        , rawQueryString = ""
         , requestHeaders = []
         , isSecure = False
         , remoteHost = SockAddrInet 0 0
         , pathInfo = []
         , queryString = []
-        , requestBody = return B.empty
-        , vault = mempty
+        , requestBody = pure ""
+        , vault = []
         , requestBodyLength = KnownLength 0
         , requestHeaderHost = Nothing
         , requestHeaderRange = Nothing
@@ -384,24 +359,23 @@ defaultRequest =
 -- However, modifying the response (especially the response body) is not trivial,
 -- so in order to get a sense of how to do it (dealing with the type of 'responseToStream'),
 -- it’s best to look at an example, for example <https://hackage.haskell.org/package/wai-extra/docs/src/Network.Wai.Middleware.Gzip.html#gzip the GZIP middleware of wai-extra>.
-{- type Middleware = Application -> Application -}
+Middleware : Type
+Middleware = Application -> Application
 
 -- | Apply a function that modifies a request as a 'Middleware'
 --
 -- @since 3.2.4
-{-modifyRequest :: (Request -> Request) -> Middleware
-modifyRequest f app = app . f -}
+modifyRequest : (Request -> Request) -> Middleware
+modifyRequest f app = app . f
 
 -- | Apply a function that modifies a response as a 'Middleware'
 --
 -- @since 3.0.3.0
-{-modifyResponse :: (Response -> Response) -> Middleware
-modifyResponse f app req respond = app req $ respond . f -}
+modifyResponse : (Response -> Response) -> Middleware
+modifyResponse f app req respond = app req $ respond . f
 
 -- | Conditionally apply a 'Middleware'
---
--- @since 3.0.3.0
-{- ifRequest :: (Request -> Bool) -> Middleware -> Middleware
+{- ifRequest : (Request -> Bool) -> Middleware -> Middleware
 ifRequest rpred middle app req
     | rpred req = middle app req
     | otherwise = app req -}
