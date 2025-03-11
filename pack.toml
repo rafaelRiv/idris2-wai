@@ -3,8 +3,8 @@ type = "local"
 path = "."
 ipkg = "idris2-way.ipkg"
 
-[custom.nightly-250221.idris2-http-types]
+[custom.all.idris2-http-types]
 type   = "github"
 url    = "https://github.com/rafaelRiv/idris2-http-types"
-commit = "9cecf0b9eefa3fee0bd3ebc91f188cfec4bedd1e"
+commit = "a4e5f1b90c20b2cce56eab0779a9af3217d4e45a"
 ipkg   = "idris2-http-types.ipkg"
