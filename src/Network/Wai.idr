@@ -34,6 +34,7 @@ import Network.Wai.Internal
 
 -- | Creating 'Response' from a file.
 --
+export
 responseFile : Status -> ResponseHeaders -> String -> Maybe FilePart -> Response
 responseFile = ResponseFile
 
@@ -61,6 +62,7 @@ responseFile = ResponseFile
 -- A3. You can force a Builder to output a ByteString before it is an
 -- optimal size by sending a flush command.
 --
+export
 responseBuilder : Status -> ResponseHeaders -> String -> Response
 responseBuilder = ResponseBuilder
 
@@ -85,7 +87,7 @@ responseBuilder = ResponseBuilder
 -- as well. However, placing the call on the outside allows your status value
 -- and response headers to depend on the scarce resource.
 --
--- @since 3.0.0
+export
 responseStream
     : Status
     -> ResponseHeaders
@@ -102,6 +104,7 @@ responseStream = ResponseStream
 --
 -- In the event that you read from the request body before returning a
 -- @responseRaw@, behavior is undefined.
+export
 responseRaw
     : (IO String -> (String -> IO ()) -> IO ())
     -> Response
@@ -111,6 +114,7 @@ responseRaw = ResponseRaw
 ----------------------------------------------------------------
 
 -- | Accessing 'Status' in 'Response'.
+export
 responseStatus : Response -> Status
 responseStatus (ResponseFile s _ _ _) = s
 responseStatus (ResponseBuilder s _ _) = s
@@ -118,6 +122,7 @@ responseStatus (ResponseStream s _ _) = s
 responseStatus (ResponseRaw _ res) = responseStatus res
 
 -- | Accessing 'H.ResponseHeaders' in 'Response'.
+export
 responseHeaders : Response -> ResponseHeaders
 responseHeaders (ResponseFile _ hs _ _) = hs
 responseHeaders (ResponseBuilder _ hs _) = hs
@@ -163,6 +168,7 @@ responseToStream (ResponseBuilder s h b) =
     responseToStream (ResponseRaw _ res) = responseToStream res -}
 
 -- | Apply the provided function to the response header list of the Response.
+export
 mapResponseHeaders
     : (ResponseHeaders -> ResponseHeaders) -> Response -> Response
 mapResponseHeaders f (ResponseFile s h b1 b2) = ResponseFile s (f h) b1 b2
@@ -192,30 +198,34 @@ mapResponseStatus _ r@(ResponseRaw _ _) = r
 --     (putStrLn \"Cleaning up\")
 --     (respond $ responseLBS status200 [] \"Hello World\")
 -- @
+export
 Application : Type
 Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 
 -- | A default, blank request.
+export
 defaultRequest : Request
-{-defaultRequest =
-    Request
+defaultRequest =
+     MkRequest
         { requestMethod = methodGet
         , httpVersion = http10
         , rawPathInfo = ""
         , rawQueryString = ""
         , requestHeaders = []
         , isSecure = False
-        , remoteHost = SockAddrInet 0 0
+        , remoteHost = IPv4Addr 0 0 0 0
         , pathInfo = []
         , queryString = []
-        , requestBody = pure ""
+        , getRequestBodyChunk = (pure "")
         , vault = []
-        , requestBodyLength = KnownLength 0
+        , requestBodyLength = (KnownLength 0)
         , requestHeaderHost = Nothing
         , requestHeaderRange = Nothing
         , requestHeaderReferer = Nothing
         , requestHeaderUserAgent = Nothing
-      } -}
+      }
+
+
 
 -- | A @Middleware@ is a component that sits between the server and application.
 --
@@ -359,18 +369,20 @@ defaultRequest : Request
 -- However, modifying the response (especially the response body) is not trivial,
 -- so in order to get a sense of how to do it (dealing with the type of 'responseToStream'),
 -- it’s best to look at an example, for example <https://hackage.haskell.org/package/wai-extra/docs/src/Network.Wai.Middleware.Gzip.html#gzip the GZIP middleware of wai-extra>.
+export
 Middleware : Type
 Middleware = Application -> Application
 
 -- | Apply a function that modifies a request as a 'Middleware'
 --
--- @since 3.2.4
+export
 modifyRequest : (Request -> Request) -> Middleware
 modifyRequest f app = app . f
 
 -- | Apply a function that modifies a response as a 'Middleware'
 --
 -- @since 3.0.3.0
+export
 modifyResponse : (Response -> Response) -> Middleware
 modifyResponse f app req respond = app req $ respond . f
 

@@ -15,10 +15,11 @@ Show RequestBodyLength where
 ||| details of the underlying implementation.
 public export
 record Request where
+  constructor MkRequest
   ||| Request method such as GET.
-  requestMethod : Method
+  {requestMethod : Method}
   ||| HTTP version such as 1.1.
-  httpVersion : HttpVersion
+  {httpVersion : HttpVersion}
   ||| Extra path information sent by the client. The meaning varies slightly
   ||| depending on backend; in a standalone server setting, this is most likely
   ||| all information after the domain name. In a CGI application, this would be
@@ -35,13 +36,13 @@ record Request where
   ||| above recommendation. Therefore, it is recommended that you test the
   ||| behavior of your application when using @rawPathInfo@ and any form of
   ||| library that might modify the @Request@.
-  rawPathInfo : String
+  {rawPathInfo : String}
   ||| If no query string was specified, this should be empty. This value
   ||| /will/ include the leading question mark.
   ||| Do not modify this raw value - modify queryString instead.
-  rawQueryString : String
+  {rawQueryString : String}
   ||| A list of headers (a pair of key and value) in an HTTP request.
-  requestHeaders : RequestHeaders
+  {requestHeaders : RequestHeaders}
   ||| Was this request made over an SSL connection?
   |||
   ||| Note that this value will /not/ tell you if the client originally made
@@ -50,40 +51,40 @@ record Request where
   ||| connect to a load balancer over SSL, but connect to the WAI handler
   ||| without SSL. In such a case, 'isSecure' will be 'False', but from a user
   ||| perspective, there is a secure connection.
-  isSecure : Bool
+  {isSecure : Bool}
   ||| The client\'s host information.
-  remoteHost : SocketAddress
+  {remoteHost : SocketAddress}
   ||| Path info in individual pieces - the URL without a hostname/port and
   ||| without a query string, split on forward slashes.
-  pathInfo : List String
+  {pathInfo : List String}
   ||| Parsed query string information.
-  queryString : Query
+  {queryString : Query}
   ||| Get the next chunk of the body. Returns 'B.empty' when the
   ||| body is fully consumed.
-  getRequestBodyChunk : IO String
+  {getRequestBodyChunk : IO String}
   ||| | A location for arbitrary data to be shared by applications and middleware.
-  vault : List String
+  {vault : List String}
   ||| | The size of the request body. In the case of a chunked request body,
   ||| this may be unknown.
   |||
   ||| Since 1.4.0
-  requestBodyLength : RequestBodyLength
+  {requestBodyLength : RequestBodyLength}
   ||| | The value of the Host header in a HTTP request.
   |||
   ||| Since 2.0.0
-  requestHeaderHost : Maybe String
+  {requestHeaderHost : Maybe String}
   ||| | The value of the Range header in a HTTP request.
   |||
   ||| Since 2.0.0
-  requestHeaderRange : Maybe String
+  {requestHeaderRange : Maybe String}
   ||| | The value of the Referer header in a HTTP request.
   |||
   ||| Since 3.2.0
-  requestHeaderReferer : Maybe String
+  {requestHeaderReferer : Maybe String}
   ||| | The value of the Referer header in a HTTP request.
   |||
   ||| Since 3.2.0
-  requestHeaderUserAgent : Maybe String
+  {requestHeaderUserAgent : Maybe String}
 
 public export
 Show Request where
