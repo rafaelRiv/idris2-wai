@@ -1,7 +1,7 @@
 [custom.all.idris2-wai]
 type = "local"
 path = "."
-ipkg = "idris2-way.ipkg"
+ipkg = "idris2-wai.ipkg"
 
 [custom.all.idris2-http-types]
 type   = "github"

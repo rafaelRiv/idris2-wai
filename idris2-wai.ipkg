@@ -1,4 +1,4 @@
-package idris2-way
+package idris2-wai
 version = 0.1.0
 modules = Network.Wai.Internal, Network.Wai
 depends = idris2-http-types,network
