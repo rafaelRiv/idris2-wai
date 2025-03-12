@@ -200,7 +200,7 @@ mapResponseStatus _ r@(ResponseRaw _ _) = r
 -- @
 public export
 Application : Type
-Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
+Application = Request -> (Response -> IO ResponseStatus) -> IO ResponseStatus
 
 -- | A default, blank request.
 export

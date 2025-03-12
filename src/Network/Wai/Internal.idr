@@ -125,4 +125,4 @@ data Response
      | ResponseRaw (IO String -> (String -> IO ()) -> IO ()) Response
 
 public export
-ResponseReceived : Type 
+data ResponseStatus = ResponseReceived 
