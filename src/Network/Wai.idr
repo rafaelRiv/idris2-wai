@@ -198,7 +198,7 @@ mapResponseStatus _ r@(ResponseRaw _ _) = r
 --     (putStrLn \"Cleaning up\")
 --     (respond $ responseLBS status200 [] \"Hello World\")
 -- @
-export
+public export
 Application : Type
 Application = Request -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 
